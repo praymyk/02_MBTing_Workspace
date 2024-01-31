@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="boardMapper">
+	<resultMap id="boardResultSet" type="board">
+		<result column="BOARD_NO" property="boardNo"></result>
+		<result column="BOARD_TITLE" property="boardTitle"></result>
+		<result column="BOARD_CONTENT" property="boardContent"></result>
+		<result column="VIEWS" property="views"></result>
+		<result column="ENROLL_DATE" property="enrollDate"></result>
+		<result column="MODIFY_DATE" property="modifyDate"></result>
+		<result column="STATUS" property="status"></result>
+		<result column="USER_NO" property="userNo"></result>
+		<result column="MATCH_NO" property="matchNo"></result>
+		<result column="ORIGIN_NAME" property="originName"></result>
+		<result column="CHANGE_NAME" property="changeName"></result>
+		<result column="USER_NAME" property="userName"></result>
+		<result column="THUMB_COUNT" property="thumbCount"></result>
+	</resultMap>
+	
+	<resultMap id="boardImgResultSet" type="boardImg">
+		<result column="IMG_NO" property="imgNo"></result>
+		<result column="ORIGIN_NAME" property="originName"></result>
+		<result column="CHANGE_NAME" property="changeName"></result>
+		<result column="THUMBNAIL" property="thumbnail"></result>
+		<result column="BOARD_NO" property="boardNo"></result>
+	</resultMap>
+
+	<select id="selectListCount" resultType="_int">
+		SELECT COUNT(*)
+		  FROM BOARD
+		 WHERE STATUS = 'Y'
+	</select>
+	
+	<select id="selectList" resultMap="boardResultSet">
+		SELECT B.BOARD_NO
+		     , B.BOARD_TITLE
+		     , B.USER_NO
+		     , RPAD(SUBSTR(M.USER_NAME, 1, 1), 4, '*') AS "USER_NAME"
+		     , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS "ENROLL_DATE"
+			 , BI.ORIGIN_NAME
+			 , BI.CHANGE_NAME
+             , (
+                SELECT COUNT (*)
+                  FROM THUMB
+                 WHERE BOARD_NO = B.BOARD_NO
+             ) AS THUMB_COUNT
+		  FROM BOARD B, BOARDIMG BI, MEMBER M
+         WHERE B.BOARD_NO = BI.BOARD_NO (+)
+           AND B.USER_NO = M.USER_NO (+)
+		   AND B.STATUS = 'Y'
+		   AND BI.THUMBNAIL = 'Y'
+		 ORDER BY BOARD_NO DESC
+	</select>
+	
+	<select id="selectTopBoardList" resultMap="boardResultSet">
+		SELECT ROWNUM, B.* 
+		  FROM (SELECT BO.BOARD_NO
+		             , BO.BOARD_TITLE
+		             , BO.USER_NO
+		             , RPAD(SUBSTR(M.USER_NAME, 1, 1), 4, '*') AS "USER_NAME"
+		             , TO_CHAR(BO.ENROLL_DATE, 'YYYY-MM-DD') AS "ENROLL_DATE"
+		             , BI.ORIGIN_NAME
+		             , BI.CHANGE_NAME
+		             , (
+		                SELECT COUNT (*)
+		                  FROM THUMB
+		                 WHERE BOARD_NO = BO.BOARD_NO
+		             ) AS THUMB_COUNT
+		          FROM BOARD BO, BOARDIMG BI, MEMBER M
+		         WHERE BO.BOARD_NO = BI.BOARD_NO (+)
+		           AND BO.USER_NO = M.USER_NO (+)
+		           AND BO.STATUS = 'Y'
+		           AND BI.THUMBNAIL = 'Y'
+		         ORDER BY THUMB_COUNT DESC) B
+		 WHERE ROWNUM BETWEEN 1 AND 4
+	</select>
+	
+	<insert id="insertBoard" parameterType="board">
+		INSERT INTO BOARD(BOARD_NO
+		                , BOARD_TITLE
+		                , USER_NO
+		                , BOARD_CONTENT)
+		           VALUES(BNO_SEQ.NEXTVAL
+		                , #{boardTitle}
+		                , #{userNo}
+		                , #{boardContent})
+	</insert>
+	
+	<insert id="insertBoardImg" parameterType="boardImg">
+		INSERT INTO BOARDIMG(IMG_NO
+							 , ORIGIN_NAME
+							 , CHANGE_NAME
+							 , THUMBNAIL
+							 , BOARD_NO)
+						VALUES(BMG_SEQ.NEXTVAL
+							 , #{originName}
+							 , #{changeName}
+							 , #{thumbnail}
+							 , BNO_SEQ.CURRVAL)
+	</insert>
+	
+	<update id="increaseCount" parameterType="_int">
+		UPDATE BOARD
+		   SET VIEWS = VIEWS + 1
+		 WHERE BOARD_NO = #{boardNo}
+		   AND STATUS = 'Y'
+	</update>
+	
+	<select id="selectBoard" parameterType="_int" resultMap="boardResultSet">
+		SELECT B.BOARD_NO
+		     , B.BOARD_TITLE
+		     , B.BOARD_CONTENT
+		     , B.VIEWS
+		     , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS "ENROLL_DATE"
+		     , TO_CHAR(B.MODIFY_DATE, 'YYYY-MM-DD') AS "MODIFY_DATE"
+		     , B.STATUS
+		     , B.USER_NO
+		     , B.MATCH_NO
+		     , RPAD(SUBSTR(M.USER_NAME, 1, 1), 4, '*') AS "USER_NAME"
+			 , (
+                SELECT COUNT (*)
+                  FROM THUMB
+                 WHERE BOARD_NO = B.BOARD_NO
+             ) AS THUMB_COUNT
+		  FROM BOARD B, MEMBER M
+		 WHERE B.USER_NO = M.USER_NO (+)
+		   AND B.BOARD_NO = #{boardNo}
+		   AND B.STATUS = 'Y'
+	</select>
+
+	<select id="selectBoardImg" parameterType="_int" resultMap="boardImgResultSet">
+		SELECT IMG_NO
+		     , ORIGIN_NAME
+		     , CHANGE_NAME
+		     , THUMBNAIL
+		     , BOARD_NO
+		  FROM BOARDIMG
+		 WHERE BOARD_NO = #{boardNo}
+	</select>
+
+	<update id="deleteBoard" parameterType="_int">
+		UPDATE BOARD
+		   SET STATUS = 'N'
+		 WHERE BOARD_NO = #{boardNo}
+	</update>
+	
+	<update id="updateBoard" parameterType="board">
+		UPDATE BOARD
+		   SET BOARD_TITLE = #{boardTitle}
+		     , BOARD_CONTENT = #{boardContent}
+		 WHERE BOARD_NO = #{boardNo}
+	</update>
+
+	<select id="selectSearchListCount" parameterType="hashmap" resultType="_int">
+		SELECT COUNT(*)
+		  FROM BOARD B, MEMBER M
+		 WHERE B.USER_NO = M.USER_NO
+		   AND B.STATUS = 'Y'
+		   AND ${condition} LIKE '%' || #{keyword} || '%'
+	</select>
+
+	<select id="selectSearchList" parameterType="hashmap" resultMap="boardResultSet">
+		SELECT B.BOARD_NO
+		     , B.BOARD_TITLE
+		     , B.USER_NO
+		     , RPAD(SUBSTR(M.USER_NAME, 1, 1), 4, '*') AS "USER_NAME"
+		     , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS "ENROLL_DATE"
+			 , BI.ORIGIN_NAME
+			 , BI.CHANGE_NAME
+			 , (
+                SELECT COUNT (*)
+                  FROM THUMB
+                 WHERE BOARD_NO = B.BOARD_NO
+             ) AS THUMB_COUNT
+		  FROM BOARD B, BOARDIMG BI, MEMBER M
+         WHERE B.USER_NO = M.USER_NO (+)
+           AND B.BOARD_NO = BI.BOARD_NO (+)
+		   AND B.STATUS = 'Y'
+		   AND BI.THUMBNAIL = 'Y'
+		   AND ${condition} LIKE '%' || #{keyword} || '%'
+		 ORDER BY BOARD_NO DESC
+	</select>
+
+	<select id="checkThumb" parameterType="hashmap" resultType="_int">
+		SELECT COUNT (*)
+		  FROM THUMB
+		 WHERE BOARD_NO = #{ boardNo }
+		   AND USER_NO = #{ userNo }
+	</select>
+	
+	<insert id="insertThumb" parameterType="hashmap">
+		INSERT INTO THUMB(BOARD_NO
+		                , USER_NO)
+		           VALUES(#{ boardNo }
+		                , #{ userNo })		
+	</insert>
+	
+	<delete id="deleteThumb" parameterType="hashmap">
+		DELETE
+		  FROM THUMB
+		 WHERE BOARD_NO = #{ boardNo }
+		   AND USER_NO = #{ userNo }
+	</delete>
+	
+	<!-- 관리자 전체 후기게시글 수 조회 -->
+	<select id="selectTotalBoard" resultType="_int">
+		SELECT COUNT(*)
+          FROM BOARD
+         WHERE STATUS = 'Y'
+	</select>
+	
+	<!-- 관리자 전체 조회 -->
+	<select id="adminSelectList" resultMap="boardResultSet">
+		SELECT B.BOARD_NO
+		     , B.BOARD_TITLE
+		     , TO_CHAR(B.ENROLL_DATE, 'YYYY-MM-DD') AS ENROLL_DATE
+		     , B.VIEWS
+		     , M.USER_NAME
+		  FROM BOARD B
+		  LEFT JOIN MEMBER M ON B.USER_NO = M.USER_NO
+		 WHERE B.STATUS = 'Y'
+		 ORDER BY B.BOARD_NO DESC
+	</select>
+	
+	<!-- 관리자페이지 검색된 게시글 개수 조회 -->
+    <select id="adminSearchListCount" parameterType="string" resultType="_int">
+        SELECT COUNT(*)
+          FROM BOARD
+         WHERE STATUS = 'Y'
+           AND (BOARD_TITLE LIKE '%' || #{keyword} || '%')
+    </select>
+    
+    
+
+    <!-- 검색된 게시글 리스트 조회 -->
+   <select id="adminSearchList" resultMap="boardResultSet" parameterType="map">
+	    SELECT *
+	    FROM (
+	        SELECT BOARD_NO
+	             , BOARD_TITLE
+	             , VIEWS
+	             , TO_CHAR(ENROLL_DATE, 'YYYY-MM-DD' ) AS ENROLL_DATE
+	             , ROWNUM AS rnum
+	        FROM BOARD
+	        WHERE STATUS = 'Y'
+	        AND (BOARD_TITLE LIKE '%' || #{keyword} || '%')
+	        ORDER BY BOARD_NO DESC
+	    )
+	    WHERE rnum BETWEEN #{startRow} AND #{endRow}
+	</select>
+	
+	
+</mapper>

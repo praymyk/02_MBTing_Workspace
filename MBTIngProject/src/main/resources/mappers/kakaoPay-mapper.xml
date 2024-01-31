@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="kakaoPayMapper">
+
+	<resultMap id="kakaoPayResultSet" type="KakaoPay">
+		<result column="PARTNER_ORDER_ID"  	property="partnerOrderId"></result>
+		<result column="TID"  				property="tid"></result>
+		<result column="CID"  				property="cid"></result>
+		<result column="PARTNER_USER_ID" 	property="partnerUserId"></result>
+		<result column="ITEM_NAME"  		property="itemName"></result>
+		<result column="PAY_METHOD"  		property="payMethod"></result>
+		<result column="QUANTITY"  			property="quantity"></result>
+		<result column="ORDER_DATE" 	 	property="orderDate"></result>
+		<result column="REFUND_DATE"  		property="refundDate"></result>
+		<result column="TOTAL_AMOUNT"  		property="totalAmount"></result>
+		<result column="TAX_FREE_AMOUNT"  	property="taxFreeAmount"></result>
+		<result column="PG_TOKEN"			property="pg_token"></result>
+		<result column="REFUND_REQUEST"		property="refundRequest"></result>
+	</resultMap>
+	
+	<resultMap id="memberResultSet" type="member">
+		<result column="USER_NO"  		property="userNo"></result>
+		<result column="EMAIL"  		property="email"></result>
+		<result column="USER_PWD"  		property="userPwd"></result>
+		<result column="PROFILE_IMG" 	property="profileImg"></result>
+		<result column="USER_NAME"  	property="userName"></result>
+		<result column="AGE"  			property="age"></result>
+		<result column="GENDER"  		property="gender"></result>
+		<result column="HEIGHT"			property="height"></result>
+		<result column="PHONE" 		 	property="phone"></result>
+		<result column="MBTI"  			property="mbti"></result>
+		<result column="MBTI_NICK"  	property="mbtiNick"></result>
+		<result column="MBTI_MATCH"		property="mbtiMatch"></result>
+		<result column="INTRODUCE"  	property="introduce"></result>
+		<result column="ADDRESS"		property="address"></result>
+		<result column="ENROLL_DATE"  	property="enrollDate"></result>
+		<result column="MODIFY_DATE"  	property="modifyDate"></result>
+		<result column="MATCH_STAT"  	property="matchStat"></result>
+		<result column="MATCH_COIN"  	property="matchCoin"></result>
+		<result column="STATUS"  		property="status"></result>
+	</resultMap>
+ 
+ <insert id="insertPay" parameterType="KakaoPay">
+ 	INSERT INTO KAKAOPAY (PARTNER_ORDER_ID,PARTNER_USER_ID,ITEM_NAME,PAY_METHOD,QUANTITY,TOTAL_AMOUNT,TAX_FREE_AMOUNT)
+ 	 	 VALUES (ORD_SEQ.NEXTVAL,
+ 	 	 		 #{partnerUserId},
+ 	 	 		 #{itemName},
+ 	 	 		 '카카오페이',
+ 	 	 		 #{quantity},
+ 	 	 		 #{totalAmount},
+ 	 	 		 #{taxFreeAmount})
+ </insert>
+ 
+ <select id="getPartnerOrder" parameterType="string" resultType="string">
+ 	SELECT PARTNER_ORDER_ID
+ 	  FROM (
+ 	  	SELECT PARTNER_ORDER_ID
+ 	  	  FROM KAKAOPAY
+ 	 	 WHERE PARTNER_USER_ID = #{email}
+ 	 	 ORDER BY PARTNER_ORDER_ID DESC)
+ 	 WHERE ROWNUM = 1
+ </select>
+ 
+ <update id="insertTid" parameterType="KakaoPay">
+ 	 UPDATE KAKAOPAY
+ 	    SET TID = #{tid}
+ 	 WHERE PARTNER_ORDER_ID = #{partnerOrderId}
+ 	   AND PARTNER_USER_ID = #{partnerUserId}
+ 
+ </update>
+ 
+ <update id="insertPgToken" parameterType="KakaoPay">
+ 	UPDATE KAKAOPAY
+ 	   SET PG_TOKEN = #{pg_token}, ORDER_DATE = SYSDATE
+ 	 WHERE PARTNER_ORDER_ID = #{partnerOrderId}
+ </update>
+
+<!-- 내 결제 리스트 수 조회용 쿼리문 -->
+<select id="selectOrderListCount" parameterType="string" resultType="_int">
+		SELECT COUNT(*)
+	  	  FROM KAKAOPAY
+	 	 WHERE PARTNER_USER_ID = #{email}
+	 	   AND PG_TOKEN IS NOT NULL
+</select>
+
+<!-- 내 결제 리스트 조회용 쿼리문 -->
+<select id="orderList" parameterType="string" resultMap="kakaoPayResultSet">
+	
+        SELECT *
+		  FROM KAKAOPAY
+		 WHERE PARTNER_USER_ID = #{email}
+		   AND PG_TOKEN IS NOT NULL
+		 ORDER BY PARTNER_ORDER_ID DESC
+
+</select>
+	
+<!-- 관리자페이지 전체 결제 금액 -->
+<select id="selectTotalPay" resultType="_int">
+	SELECT SUM(TOTAL_AMOUNT)
+      FROM KAKAOPAY
+</select>
+
+<!-- 결제 성공된 아이템 이름을 받아오는 쿼리문 -->
+<select id="itemName" parameterType="string" resultType="string">
+	SELECT ITEM_NAME
+	  FROM KAKAOPAY
+	 WHERE PG_TOKEN= #{pg_token}
+</select>
+
+<!-- MBTIng 코인 추가용 쿼리문 -->
+<update id="insertCoinX5" parameterType="member">
+	UPDATE MEMBER
+	   SET MATCH_COIN = MATCH_COIN + 5
+     WHERE EMAIL = #{email}
+</update>
+
+<!-- MBTIng 코인 추가용 쿼리문 -->
+<update id="insertCoinX10" parameterType="member">
+	UPDATE MEMBER
+	   SET MATCH_COIN = MATCH_COIN + 10
+     WHERE EMAIL = #{email}
+</update>
+
+<!-- 결제 환불 요청용 쿼리문 -->
+<update id="refundRequest" parameterType="KakaoPay">
+	UPDATE KAKAOPAY
+	   SET REFUND_REQUEST = 2
+	 WHERE PARTNER_ORDER_ID = #{partnerOrderId}
+</update>
+
+<!-- 관리자페이지 유료계정비율 원그래프 -->
+<select id="totalPremiumCount" resultType="_int">
+	SELECT SUM(A) AS PREMIUM_COUNT
+	  FROM (SELECT COUNT(*) A 
+	          FROM KAKAOPAY
+	         WHERE PG_TOKEN IS NOT NULL
+	         GROUP BY PARTNER_USER_ID) 
+</select>
+
+<!-- 관리자페이지 무료계정비율 원그래프 -->
+<select id="totalFreeCount" resultType="_int">
+	WITH MemberCount AS (
+  SELECT COUNT(EMAIL) AS M
+  FROM MEMBER
+),
+KakaoPayCount AS (
+  SELECT SUM(A) AS M
+  FROM (
+    SELECT COUNT(*) AS A
+    FROM KAKAOPAY
+    WHERE PG_TOKEN IS NOT NULL
+    GROUP BY PARTNER_USER_ID
+  )
+)
+SELECT MemberCount.M - KakaoPayCount.M AS Result
+FROM MemberCount, KakaoPayCount
+</select>
+
+
+<!-- 관리자페이지 월 별 매출 그래프 -->
+<select id="totalMonthlySalesCount" resultType="_int">
+	WITH Months AS (
+    SELECT TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE, 'YYYY'), LEVEL - 1), 'MM') AS month
+    FROM dual
+    CONNECT BY LEVEL &lt;= 12
+	)
+	SELECT NVL(SUM(kakaopay.TOTAL_AMOUNT), 0) AS TOTAL_AMOUNT
+	  FROM Months m
+	  LEFT JOIN kakaopay ON TO_CHAR(kakaopay.ORDER_DATE, 'MM') = m.month
+	 WHERE EXTRACT(YEAR FROM kakaopay.ORDER_DATE) = EXTRACT(YEAR FROM SYSDATE)
+	 GROUP BY m.month
+	 ORDER BY m.month
+</select>
+
+<!-- 관리자페이지 년 별 매출 그래프 -->
+<select id="totalyearlySalesCount" resultType="_int">
+	SELECT NVL(SUM(kakaopay.TOTAL_AMOUNT), 0) AS TOTAL_AMOUNT
+	FROM kakaopay
+	WHERE TO_CHAR(kakaopay.ORDER_DATE, 'YYYY') BETWEEN '2019' AND TO_CHAR(SYSDATE, 'YYYY')
+	GROUP BY TO_CHAR(kakaopay.ORDER_DATE, 'YYYY')
+	ORDER BY TO_CHAR(kakaopay.ORDER_DATE, 'YYYY')
+</select>
+
+<!-- 관리자페이지 결제관리 게시글 수 조회 -->
+	<select id="adminPaySelectListCount" resultType="_int">
+		SELECT COUNT(*)
+		  FROM KAKAOPAY
+	</select>
+
+	<!-- 관리자페이지 결제관리 게시글 리스트 조회 -->
+	<select id="adminPaySelectList" resultMap="kakaoPayResultSet">
+		SELECT PARTNER_ORDER_ID  <!-- 주문번호 -->
+		     , PARTNER_USER_ID  <!-- 구매자 -->
+		     , ITEM_NAME  <!-- 상품명 -->
+		     , QUANTITY  <!-- 상품수량 -->
+		     , TOTAL_AMOUNT  <!-- 상품총액 -->
+		     , TO_CHAR(ORDER_DATE, 'YYYY-MM-DD HH:mm:ss') AS ORDER_DATE  <!-- 구입일 -->
+		     , REFUND_REQUEST <!-- 환불요청 -->
+		  FROM KAKAOPAY
+		 ORDER BY PARTNER_ORDER_ID DESC
+	</select>
+	
+	<!-- 관리자페이지 환불요청 승인/거절  -->
+	<update id="refundSuccess" parameterType="KakaoPay">
+		UPDATE KAKAOPAY
+		   SET REFUND_REQUEST = #{refundRequest}
+		 WHERE PARTNER_ORDER_ID = #{partnerOrderId}
+	</update>
+	
+	<!-- 검색된 환불 회원 수 조회 -->
+    <select id="paySearchListCount" parameterType="string" resultType="_int">
+        SELECT COUNT(*)
+          FROM KAKAOPAY
+         WHERE (PARTNER_USER_ID LIKE '%' || #{keyword} || '%')
+    </select>
+
+   <!-- 검색된 환불 회원 리스트 조회 -->
+	<select id="paySearchList" resultMap="kakaoPayResultSet" parameterType="map">
+	      SELECT *
+			FROM (
+			    SELECT
+			          PARTNER_ORDER_ID,  <!-- 주문번호 -->
+			          PARTNER_USER_ID,  <!-- 구매자 -->
+			          ITEM_NAME,  <!-- 상품명 -->
+			          QUANTITY,  <!-- 상품수량 -->
+			          TOTAL_AMOUNT,  <!-- 상품총액 -->
+			          TO_CHAR(ORDER_DATE, 'YYYY-MM-DD HH:mm:ss') AS ORDER_DATE,  <!-- 구입일 -->
+			          REFUND_REQUEST,  <!-- 환불요청 -->
+			          ROWNUM AS rnum
+			    FROM KAKAOPAY
+			    WHERE (PARTNER_USER_ID LIKE '%' || #{keyword} || '%')
+			    ORDER BY PARTNER_ORDER_ID DESC
+			)
+			WHERE rnum BETWEEN #{startRow} AND #{endRow}
+	</select>
+	
+	<select id="memberPayUser" resultMap="kakaoPayResultSet">
+		SELECT PARTNER_USER_ID
+		  FROM MEMBER
+		  LEFT JOIN KAKAOPAY ON (EMAIL = PARTNER_USER_ID)
+		 WHERE ORDER_DATE IS NOT NULL
+	</select>
+</mapper>

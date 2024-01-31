@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slick Slider Example</title>
+    
+    <!-- Slick CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Slick JS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+    <style>
+        .slider {
+            width: 80%;
+            margin: auto;
+        }
+
+        .slider img {
+            width: 100%;
+            height: auto;
+        }
+
+        .slick-prev,
+        .slick-next {
+            font-size: 24px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slider">
+        <div><img src="https://placekitten.com/800/400" alt="Slide 1"></div>
+        <div><img src="https://placekitten.com/801/400" alt="Slide 2"></div>
+        <div><img src="https://placekitten.com/802/400" alt="Slide 3"></div>
+        <div><img src="https://placekitten.com/803/400" alt="Slide 4"></div>
+        <!-- Add more slides as needed -->
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('.slider').slick({
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                prevArrow: '<button type="button" class="slick-prev">&#8592;</button>',
+                nextArrow: '<button type="button" class="slick-next">&#8594;</button>'
+            });
+        });
+    </script>
+
+</body>
+</html>

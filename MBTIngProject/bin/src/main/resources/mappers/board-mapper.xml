@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="boardMapper">
+	<resultMap id="boardResultSet" type="board">
+		<result column="BOARD_NO" property="boardNo"></result>
+		<result column="BOARD_TITLE" property="boardTitle"></result>
+		<result column="BOARD_CONTENT" property="boardContent"></result>
+		<result column="VIEWS" property="views"></result>
+		<result column="ENROLL_DATE" property="enrollDate"></result>
+		<result column="MODIFY_DATE" property="modifyDate"></result>
+		<result column="STATUS" property="status"></result>
+		<result column="USER_NO" property="userNo"></result>
+		<result column="MATCH_NO" property="matchNo"></result>
+	</resultMap>
+	
+	<select id="selectListCount" resultType="_int">
+		SELECT COUNT(*)
+		  FROM BOARD
+		 WHERE STATUS = 'Y'
+	</select>
+	
+	<select id="selectList" resultMap="boardResultSet">
+		SELECT BOARD_NO
+		     , BOARD_TITLE
+		     , USER_NO
+		     , TO_CHAR(ENROLL_DATE, 'YYYY-MM-DD') AS "ENROLL_DATE"
+		  FROM BOARD
+         WHERE STATUS = 'Y'
+		 ORDER BY BOARD_NO DESC
+	</select>
+	
+	<select id="selectTopBoardList" resultMap="boardResultSet">
+		SELECT ROWNUM, B.* 
+		  FROM (SELECT BOARD_NO
+		             , BOARD_TITLE
+		             , USER_NO
+		             , VIEWS
+		             , TO_CHAR(ENROLL_DATE, 'YYYY-MM-DD') AS "ENROLL_DATE"
+		          FROM BOARD
+		         WHERE STATUS = 'Y'
+		         ORDER BY VIEWS DESC) B
+		 WHERE ROWNUM BETWEEN 1 AND 4
+	</select>
+	
+	<insert id="insertBoard" parameterType="board">
+		INSERT INTO BOARD(BOARD_NO
+		                , BOARD_TITLE
+		                , USER_NO
+		                , BOARD_CONTENT)
+		           VALUES(BNO_SEQ.NEXTVAL
+		                , #{boardTitle}
+		                , #{userNo}
+		                , #{boardContent})
+	</insert>
+	
+	<update id="increaseCount" parameterType="_int">
+		UPDATE BOARD
+		   SET VIEWS = VIEWS + 1
+		 WHERE BOARD_NO = #{boardNo}
+		   AND STATUS = 'Y'
+	</update>
+	
+	<select id="selectBoard" parameterType="_int" resultMap="boardResultSet">
+		SELECT BOARD_NO
+		     , BOARD_TITLE
+		     , USER_NO
+		     , VIEWS
+		     , TO_CHAR(ENROLL_DATE, 'YYYY-MM-DD') AS "ENROLL_DATE"
+		     , BOARD_CONTENT
+		  FROM BOARD
+		 WHERE BOARD_NO = #{boardNo}
+		   AND STATUS = 'Y'
+	</select>
+	
+	<update id="deleteBoard" parameterType="_int">
+		UPDATE BOARD
+		   SET STATUS = 'N'
+		 WHERE BOARD_NO = #{boardNo}
+	</update>
+	
+	<update id="updateBoard" parameterType="board">
+		UPDATE BOARD
+		   SET BOARD_TITLE = #{boardTitle}
+		     , BOARD_CONTENT = #{boardContent}
+		 WHERE BOARD_NO = #{boardNo}
+		   AND STATUS = 'Y'
+	</update>
+</mapper>

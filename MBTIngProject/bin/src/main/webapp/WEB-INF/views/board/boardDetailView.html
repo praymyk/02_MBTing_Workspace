@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>만남후기 상세조회</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Single+Day&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .outer {
+            width: 100%;
+            margin: auto;
+        }
+        .reviewbanner {
+            width: 100%;
+            height: 150px;
+            margin: auto;
+            background-image:url(https://images.unsplash.com/photo-1480623826718-27e89ac63a4f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
+            background-position: center center;
+            background-size: cover;
+        }
+        .reviewbanner-text {
+            width: 1200px;
+            height: 150px;
+            text-align: center;
+            line-height: 150px;
+            color: white;
+            font-size: xx-large;
+        }
+        .reviewdetail-top-button {
+            width: 1200px;
+            margin: auto;
+        }
+        .reviewdetail-top-button button {
+            width: 65px;
+            height: 30px;
+            border: none;
+            border-radius: 5px;
+            background-color: pink;
+        }
+        .reviewdetail-top-button button:hover {
+            border: 1px solid pink;
+            background-color: white;            
+        }
+        .reviewdetail-area {
+            width: 1200px;
+            margin: auto;
+        }
+        .reviewdetail-table {
+            width: 300px;
+            border-bottom: 2px solid pink;
+            font-family: 'Single Day', cursive;
+            font-size:large;
+            font-weight: bold;
+        }
+        .reviewdetail-table td {
+            width: 150px;
+        }
+        .reviewdetail-table-title {
+            font-size: xx-large;
+            font-weight: bold;
+        }
+        .reviewdetail-content p {
+            height: 500px;        
+            white-space: pre-wrap;
+        }
+        .reviewdetail-like {
+            font-family: 'Single Day', cursive;
+            font-size: x-large;
+            font-weight: bold;
+        }
+        .reviewdetail-bottom-button {
+            width: 1200px;
+            margin: auto;            
+        }
+        .reviewdetail-bottom-button button {
+            width: 65px;
+            height: 30px;
+            border: none;
+            border-radius: 5px;
+            background-color: pink;
+        }
+        .reviewdetail-bottom-button button:hover {
+            border: 1px solid pink;
+            background-color: white;            
+        }
+        .move-page {
+            width: 1200px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+
+        <br>
+
+        <div class="reviewbanner" align="center">
+            <div class="reviewbanner-text">
+                <p>만남후기</p>
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="reviewdetail-top-button" align="right">
+            <button>목록</button>
+        </div>
+        <div class="reviewdetail-area">
+            <table class="reviewdetail-table">
+                <tr>
+                    <td colspan="2" class="reviewdetail-table-title">제목</td>
+                </tr>
+                <tr>
+                    <td>💑작성자명</td>
+                    <td>작성 연도. 월. 일.</td>
+                </tr>
+                <tr>
+                    <td colspan="2">조회수</td>
+                </tr>
+            </table>
+
+            <br>
+
+            <div class="reviewdetail-content">
+                <p>내용</p>
+            </div>
+            <div class="reviewdetail-like" align="center">
+                ❤️<br>
+                좋아요수
+            </div>
+
+            <br>
+
+        </div>
+        <div class="reviewdetail-bottom-button" align="right">
+            <button>수정</button>
+            <button>삭제</button>
+        </div>
+
+        <br><br><br>
+
+        <div class="move-page" align="center">
+
+        </div>
+
+        <br>
+
+    </div>
+</body>
+</html>

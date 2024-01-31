@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="chatMapper">
+
+    <resultMap type="chatRoom" id="chatRoomResultSet">
+        <result property="roomNo" column="ROOM_NO" />
+        <result property="userEmail" column="USER_EMAIL" />
+        <result property="userName" column="USER_NAME" />        
+        <result property="userPic" column="USER_PRO_IMG" />
+        <result property="masterEmail" column="MASTER_EMAIL" />
+        <result property="masterName" column="MASTER_NAME" />
+        <result property="masterPic" column="MASTER_PRO_IMG" />
+        <result property="sendTime" column="SENDTIME" />
+        <result property="messageContent" column="MESSAGE_CONTENT" />
+    </resultMap>
+ 
+    <resultMap type="chatMessage" id="chatMessageResultSet">
+        <result property="messageNo" column="MESSAGE_NO" />
+        <result property="roomNo" column="ROOM_NO" />
+        <result property="messageContent" column="MESSAGE_CONTENT" />
+        <result property="name" column="USER_NAME" />
+        <result property="email" column="USER_EMAIL" />
+        <result property="unReadMessage" column="UN_READ_MESSAGE" />
+        <result property="sessionCount" column="SESSION_COUNT" />
+        <result property="sendTime" column="SENDTIME" />
+    </resultMap>
+    
+    <resultMap id="memberResultSet" type="member">
+	 	<result column="USER_NO"  		property="userNo"></result>
+	 	<result column="EMAIL"  		property="email"></result>
+	 	<result column="USER_PWD"  		property="userPwd"></result>
+	 	<result column="PROFILE_IMG" 	property="profileImg"></result>
+	 	<result column="USER_NAME"  	property="userName"></result>
+	 	<result column="AGE"  			property="age"></result>
+	 	<result column="GENDER"  		property="gender"></result>
+	 	<result column="PHONE" 		 	property="phone"></result>
+	 	<result column="MBTI"  			property="mbti"></result>
+	 	<result column="MBTI_NICK"  	property="mbtiNick"></result>
+	 	<result column="INTRODUCE"  	property="introduce"></result>
+	 	<result column="ENROLL_DATE"  	property="enrollDate"></result>
+	 	<result column="MODIFY_DATE"  	property="modifyDate"></result>
+	 	<result column="MATCH_STAT"  	property="matchStat"></result>
+	 	<result column="MATCH_COIN"  	property="matchCoin"></result>
+	 	<result column="STATUS"  		property="status"></result>
+	 	<result column="MY_ROOM_NO" 	property="myRoomNo"></result>
+	 	<result column="MATCHING_COUNT" property="matchingCount"></result>
+ 	</resultMap>
+    
+	<resultMap id="mbtiResultSet" type="mbti">
+	 	<result column="USER_NO"  		property="userNo"></result>
+	 	<result column="RECEIVER_NO"  	property="receiverNo"></result>
+	 	<result column="PROPOSER_NO"  	property="proposerNo"></result>
+	</resultMap>
+
+	
+	<insert id="createChat" parameterType="chatRoom">
+        insert into CHATROOM values(RNO_SEQ.NEXTVAL,
+        						   #{userEmail},
+        						   #{userName},
+        						   #{userPic},
+        						   #{masterEmail},
+        						   #{masterName},
+        						   #{masterPic}, 
+        						   Default)
+    </insert>
+    
+    <select id="searchChatRoom" parameterType="chatRoom" resultMap="chatRoomResultSet">
+        SELECT * FROM CHATROOM
+        WHERE USER_EMAIL   = #{userEmail} 
+          AND MASTER_EMAIL = #{masterEmail}
+    </select>
+    
+    <select id="chatRoomList" parameterType="string" resultMap="chatRoomResultSet">
+		SELECT A.*
+		  from ( SELECT cr.*, cm.sendtime, cm.message_content
+        		   FROM chatroom cr
+          		   JOIN (
+             			SELECT sendtime, message_content, room_no
+             			  FROM (
+                 			SELECT  message_content, room_no, sendtime
+                     		  FROM (
+                         		SELECT sendtime, message_content, room_no,
+                                ROW_NUMBER() OVER (PARTITION BY room_no ORDER BY CAST(message_no AS INT) DESC) as rn
+                         		  FROM chatmessage
+                     		  ) ranked_messages
+                  		   WHERE rn = 1
+               			ORDER BY sendtime DESC )
+         		   ) cm ON cr.room_no = cm.room_no
+         		WHERE user_email = #{userEmail} OR cr.master_email = #{userEmail}) A
+         where user_email not in(select blockmememail from blockmember where blockproemail = #{userEmail}) and
+         master_email not in(select blockmememail from blockmember where blockproemail = #{userEmail})  
+    </select>
+    
+    <select id="chatRoom" parameterType="string" resultMap="chatRoomResultSet">
+    	SELECT * FROM CHATROOM 
+    	WHERE USER_EMAIL = #{userEmail} AND MASTER_EMAIL = #{masterEmail}
+    
+    </select>
+    
+    <select id="selectChatRoom" parameterType="string" resultMap="chatRoomResultSet">
+        SELECT * FROM CHATROOM 
+        WHERE ROOM_NO = #{roomNo} 
+    </select>
+    
+    <insert id="insertMessage" parameterType="ChatMessage">
+        <if test="sessionCount == 1">
+        INSERT INTO CHATMESSAGE VALUES(#{roomNo}, CNO_SEQ.NEXTVAL, #{messageContent}, #{name}, #{email}, 1 ,1 , default)
+        </if>
+        <if test="sessionCount == 2">
+        INSERT INTO CHATMESSAGE VALUES(#{roomNo}, CNO_SEQ.NEXTVAL, #{messageContent}, #{name}, #{email}, 0, 2 , default)
+        </if>
+    </insert>
+    
+     <select id="messageList" parameterType="string" resultMap="chatMessageResultSet">
+         SELECT * FROM CHATMESSAGE
+          WHERE ROOM_NO = #{room_no}
+ 	   ORDER BY CAST(message_no AS INT) ASC
+    </select>
+
+    <update id="updateCount" parameterType="ChatMessage">
+        UPDATE CHATMESSAGE
+        SET UN_READ_MESSAGE = 0
+        WHERE ROOM_NO = #{roomNo} AND USER_EMAIL != #{email} AND UN_READ_MESSAGE = 1
+    </update>
+    
+    <select id="masterInfo" parameterType="string" resultMap="memberResultSet">
+    	select * 
+    	from member 
+    	where email = #{email}
+    </select>
+    
+    <select id="allMemberList" resultMap="memberResultSet" parameterType="member">
+    	SELECT profile_img, age, mbti , user_name , mbti_nick , email , user_no ,matching_count , address, introduce
+		      FROM (
+		        SELECT M.* , COALESCE(matching_count, 0) AS matching_count
+		        FROM MEMBER M
+		        LEFT JOIN (
+		            SELECT RECEIVER_NO, COALESCE(COUNT(*), 0) AS matching_count
+		            FROM MATCHING
+		            GROUP BY RECEIVER_NO
+		        ) C ON M.user_no = C.RECEIVER_NO
+		        WHERE STATUS = 'Y'  
+		          AND MBTI IS NOT NULL
+		    ) A
+     where USER_NO != #{userNo}
+         AND USER_NO != 0
+    	 AND EMAIL NOT IN (
+      SELECT BLOCKMEMEMAIL 
+        FROM BLOCKMEMBER 
+       WHERE BLOCKPROEMAIL = #{email})
+    </select>
+    
+    <select id="searchMember" resultMap="memberResultSet" parameterType="searchmember">
+    	 SELECT *
+    	   FROM (
+		        SELECT M.* , COALESCE(matching_count, 0) AS matching_count
+		        FROM MEMBER M
+		        LEFT JOIN (
+		            SELECT RECEIVER_NO, COALESCE(COUNT(*), 0) AS matching_count
+		            FROM MATCHING
+		            GROUP BY RECEIVER_NO
+		        ) C ON M.user_no = C.RECEIVER_NO
+		        WHERE STATUS = 'Y'  
+		          AND MBTI IS NOT NULL
+		    ) A
+    	WHERE STATUS = 'Y'
+    <if test='height != "없음"'>
+	    <choose>
+	        <when test="endHeight == 160">
+	            AND HEIGHT &lt;= #{endHeight} 
+	        </when>
+	        <otherwise>
+	            AND HEIGHT BETWEEN #{startHeight} and #{endHeight}
+	        </otherwise>
+	    </choose>
+	</if>
+	<if test='age != "없음"'>
+    <choose>
+    	<when test="startAge == 50">
+    		AND AGE &gt;= #{startAge}
+    	</when>
+    	<otherwise>
+    		 AND AGE BETWEEN #{startAge} and #{endAge}
+    	</otherwise>
+    </choose>
+    </if>
+    <if test='gender != "N"'>
+        AND GENDER = #{gender}
+    </if>
+    <if test='mbti != "없음"'>
+    AND MBTI = #{mbti}
+    </if>
+    <if test='address != "없음"'>
+    AND ADDRESS = #{address}
+    </if>
+    AND USER_NO != #{userNo}
+    AND USER_NO != 0
+    AND EMAIL NOT IN (
+      SELECT BLOCKMEMEMAIL 
+        FROM BLOCKMEMBER 
+       WHERE BLOCKPROEMAIL = #{email})
+    </select>
+      
+    <select id="checkProposer" resultMap="mbtiResultSet" parameterType="_int">
+    	SELECT RECEIVER_NO
+		  FROM MATCHING
+		 WHERE PROPOSER_NO = #{userNo}
+		   AND MATCH_STAT = 2
+    </select>
+    
+     <select id="checkReciever" resultMap="mbtiResultSet" parameterType="_int">
+    	SELECT PROPOSER_NO
+		  FROM MATCHING
+		 WHERE RECEIVER_NO = #{userNo}
+		   AND MATCH_STAT = 2
+    </select>
+    
+    <select id="checkMatching" resultMap="mbtiResultSet" parameterType="_int">
+    	SELECT RECEIVER_NO , PROPOSER_NO 
+    	  FROM MATCHING 
+    	 WHERE MATCH_STAT = 3
+		   AND (PROPOSER_NO = #{userNo} or receiver_no = #{userNo}) 
+    </select>
+    
+    <update id="updateMatchStat" parameterType="_int">
+    	UPDATE MEMBER
+    	SET MATCH_STAT = 1
+    	WHERE USER_NO = #{proposerNo}
+    </update>
+    
+    <delete id="deleteMatching" parameterType="_int"> 
+    	DELETE MATCHING	
+		 WHERE RECEIVER_NO = #{receiverNo}
+		   AND PROPOSER_NO = #{proposerNo}
+    </delete>
+    
+    <update id="insertUnReadMessage" parameterType="chatMessage">
+    	UPDATE CHATMESSAGE SET SESSION_COUNT = #{sessionCount} WHERE ROOM_NO = #{roomNo} and session_count = 1
+    </update>
+    
+    <select id="countAll" resultType="_int">
+    	select count(un_read_message)
+		 from chatmessage 
+		where room_no IN (
+        	select room_no 
+        	  from chatroom 
+       		 where user_email = #{email} or master_email = #{email}
+        	)  and un_read_message = 1 and user_email != #{email}
+    </select>
+    
+    <select id="countRoomAll" resultMap="chatMessageResultSet" parameterType="string" >
+    	select room_no , count(un_read_message) as un_read_message
+	 	  from chatmessage 
+		 where room_no in (
+        	select room_no 
+        	  from chatroom 
+        	 where user_email = #{email} or master_email = #{email}
+        ) and (un_read_message = 1) 
+          and (user_email != #{email})
+	  group by room_no
+    </select>
+    
+    <select id="getDeleteRoomNo" parameterType="hashmap" resultType="string">
+    	SELECT ROOM_NO 
+    	FROM CHATROOM 
+    	 WHERE ((USER_EMAIL = #{userEmail}) AND (MASTER_EMAIL = #{masterEmail}))
+		 OR ((USER_EMAIL = #{masterEmail}) AND (MASTER_EMAIL = #{userEmail}))
+    </select>
+    
+    <delete id="deleteMessage" parameterType="string">
+         DELETE CHATMESSAGE
+          WHERE ROOM_NO = #{roomNo}
+    </delete>
+    
+    <delete id="deleteChatRoom" parameterType="string">
+    	DELETE CHATROOM 
+    	WHERE ROOM_NO = #{roomNo}
+    </delete>
+    
+    <delete id="deleteMatchFromChat" parameterType="hashmap">
+    	DELETE MATCHING 
+		 WHERE (PROPOSER_NO = ( select user_no from member where email = #{userEmail}) AND RECEIVER_NO = ( select user_no from member where email = #{masterEmail})) 
+	        OR  (PROPOSER_NO = ( select user_no from member where email = #{masterEmail}) AND RECEIVER_NO = ( select user_no from member where email = #{userEmail}))	
+    </delete>
+    
+    <insert id="blockMem" parameterType="string">
+    	INSERT INTO BLOCKMEMBER VALUES( BMB_SEQ.NEXTVAL , #{blockMemEmail} , #{blockProEmail})
+    </insert>
+    
+    <select id="blockList" parameterType="string" resultMap="memberResultSet">
+    	select * 
+		  from member 
+	 	 where email in (select blockmememail
+		  				   from blockmember
+		 				  where blockproemail = #{email})
+    </select>
+    
+    <delete id="unBlockMem" parameterType="string">
+    		DELETE BLOCKMEMBER WHERE BLOCKMEMEMAIL = #{blockMemEmail} AND BLOCKPROEMAIL = #{blockProEmail}
+    </delete>
+</mapper>

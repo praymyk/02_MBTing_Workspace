@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./loopCSS.css" />
+    <title>Document</title>
+
+<style>
+
+    * {
+    margin: 0;
+    padding: 0;
+    }
+    img {
+    width: 100%;
+    height: 100%;
+    }
+
+    li {
+    list-style: none;
+    }
+    .slide_wrapper {
+    position: relative;
+    width: 330px;
+    margin: 0 auto;
+    height: 300px;
+    overflow: hidden;
+    }
+    .slides {
+    position: absolute;
+    left: 0;
+    top: 0;
+    }
+    .slides.animated {
+    transition: 0.5s ease-out;
+    }
+    .slides li {
+    margin-top: 10px;
+    float: left;
+    width: 300px;
+    height: 300px;
+    }
+    .slides li:not(:last-child) {
+    margin-right: 30px;
+    }
+    .controls {
+    text-align: center;
+    margin-top: 50px;
+    }
+    .controls span {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    }
+
+</style>
+
+  </head>
+  <body>
+    <div class="slide_wrapper">
+      <ul class="slides">
+        <li>  01  <img  src="https://i.pinimg.com/564x/88/31/c6/8831c6628b6a3fb79db75b39d8ef98d6.jpg" alt=""/> </li>
+        <li>  02  <img  src="https://i.pinimg.com/564x/88/31/c6/8831c6628b6a3fb79db75b39d8ef98d6.jpg" alt=""/> </li>
+        <li>  03 <img  src="https://i.pinimg.com/564x/88/31/c6/8831c6628b6a3fb79db75b39d8ef98d6.jpg" alt=""/> </li>
+      </ul>
+    </div>
+
+    <p class="controls">
+      <span class="prev">prev</span>
+      <span class="next">next</span>
+    </p>
+
+    <script src="./loopSlide.js"></script>
+  </body>
+
+  <script>
+    // 요소 가져오기
+    const slides = document.querySelector(".slides");
+    const slide = document.querySelectorAll(".slides li");
+    const prevBtn = document.querySelector(".prev");
+    const nextBtn = document.querySelector(".next");
+
+    // 변수 선언
+    let currentIdx = 0;
+    const slideCount = slide.length;
+    const slideWidth = 300;
+    const slideMargin = 30;
+
+    // 초기화
+    makeClone();
+    setInit();
+
+    // 이벤트 리스너 등록
+    nextBtn.addEventListener("click", () => moveSlide(currentIdx + 1));
+    prevBtn.addEventListener("click", () => moveSlide(currentIdx - 1));
+
+    // 함수 정의
+    function makeClone() {
+    for (let i = 0; i < slideCount; i++) {
+        const cloneSlide = slide[i].cloneNode(true);
+        cloneSlide.classList.add("clone");
+        slides.appendChild(cloneSlide);
+    }
+
+    for (let i = slideCount - 1; i >= 0; i--) {
+        const cloneSlide = slide[i].cloneNode(true);
+        cloneSlide.classList.add("clone");
+        slides.prepend(cloneSlide);
+    }
+
+    updateWidth();
+    setTimeout(() => slides.classList.add("animated"), 100);
+    }
+
+    function updateWidth() {
+    const currentSlides = document.querySelectorAll(".slides li");
+    const newSlideCount = currentSlides.length;
+    const newWidth = (slideWidth + slideMargin) * newSlideCount - slideMargin + "px";
+    slides.style.width = newWidth;
+    }
+
+    function setInit() {
+    const translateValue = -(slideWidth + slideMargin) * slideCount;
+    slides.style.transform = `translateX(${translateValue}px)`;
+    }
+
+    function moveSlide(num) {
+    slides.style.left = -num * (slideWidth + slideMargin) + "px";
+    currentIdx = num;
+
+    if (currentIdx === slideCount || currentIdx === -slideCount) {
+        setTimeout(() => {
+        slides.classList.remove("animated");
+        slides.style.left = "0px";
+        currentIdx = 0;
+        }, 500);
+
+        setTimeout(() => slides.classList.add("animated"), 600);
+    }
+    }
+  </script>
+</html> 

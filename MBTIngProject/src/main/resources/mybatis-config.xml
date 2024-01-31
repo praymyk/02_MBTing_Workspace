@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		 <setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+	
+	<!-- vo 클래스 추가 시 등록해 주세요! -->
+	<typeAliases>
+		<typeAlias type="com.kh.mbting.board.model.vo.Board" alias="board"/>
+		<typeAlias type="com.kh.mbting.board.model.vo.BoardImg" alias="boardImg"/>
+		<typeAlias type="com.kh.mbting.member.model.vo.Member" alias="member"/>	
+		<typeAlias type="com.kh.mbting.notice.model.vo.Notice" alias="notice"/>	
+		<typeAlias type="com.kh.mbting.chatting.model.vo.ChatRoom" alias="chatRoom"/>	
+		<typeAlias type="com.kh.mbting.chatting.model.vo.ChatMessage" alias="chatMessage"/>	
+		<typeAlias type="com.kh.mbting.mbti.model.vo.Mbti" alias="mbti"/>
+		<typeAlias type="com.kh.mbting.matching.model.vo.Matching" alias="matching"/>
+		<typeAlias type="com.kh.mbting.pay.vo.KakaoPay" alias="kakaoPay"/>
+		<typeAlias type="com.kh.mbting.chatting.model.vo.SearchMember" alias="searchmember"/>
+		<typeAlias type="com.kh.mbting.admin.model.vo.Month" alias="month"/>
+		<typeAlias type="com.kh.mbting.member.model.vo.Verification" alias="verification"/>
+		<!-- <typeAlias type="com.kh.mbting.admin.model.dto.MemPay" alias="mempay"/> -->
+		
+	</typeAliases>
+	
+	<!-- 메퍼 파일 추가 시 등록해 주세요! -->
+	<mappers>
+		<mapper resource="/mappers/member-mapper.xml"/>
+		<mapper resource="/mappers/board-mapper.xml"/>
+		<mapper resource="/mappers/chatting-mapper.xml"/>
+		<mapper resource="/mappers/notice-mapper.xml"/>
+		<mapper resource="/mappers/mbti-mapper.xml"/>
+		<mapper resource="/mappers/kakaoPay-mapper.xml"/>
+	</mappers>
+  
+</configuration>
