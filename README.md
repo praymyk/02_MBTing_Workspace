@@ -40,11 +40,36 @@ Web
 
 <br/>
 
-<h3>✔️회원가입 기능</h3>
-<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/enroll.gif">
-
-<h3>✔️마이페이지</h3>
+<h2> 🟪 구현 화면/코드 : 회원가입 기능</h3>
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/enroll.gif"> 
+<br/>
+✔️ 정규식을 이용한 유효성 검사 스크립트 <br><br>
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/Enroll.png">
+<br/>
+✔️ 회원가입 요청 Controller단 처리 코드 <br><br>
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/Enroll2.png">
+<br/>
+<h2> 🟪 구현 화면/코드 : 마이페이지</h3>
 <img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/mypage.gif">
+<br/>
+✔️ 마이페이지 정보 ajax 처리 코드 <br><br>
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/mypage.png">
+<br/>
+✔️ 마이페이지 정보 수정 Controller단 처리 코드 <br><br>
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/mypage3.png">
+✔️ 매칭 신청자 수락용 Controller단 처리 코드 <br><br>
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/mypage2.png">
+<br/>
 
-<h3>✔️결제 기능</h3>
+
+<h2> 🟪 구현 화면/코드 : 결제 기능</h3>
 <img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/pay.gif">
+<br/>
+✔️ 결제 요청에 대한 ajax 처리 코드 part1<br><br>
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/pay.png">
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/pay2.png">
+<br/>
+✔️ 결제 성공으로 KAKAOPAY 리다이렉트에 대한 처리 코드  <br><br>
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/pay3.png">
+<br/>
+
