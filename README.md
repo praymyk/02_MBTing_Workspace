@@ -40,6 +40,9 @@ Web
 
 <br/>
 
+<h2> 🟪 ERD 설계 </h2>
+<img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/MBTING ERD.png"> 
+
 <h2> 🟪 구현 화면/코드 : 회원가입 기능</h3>
 <img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/enroll.gif"> 
 <br/>
