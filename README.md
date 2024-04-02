@@ -21,10 +21,10 @@ Web
 5명 (팀장)
 <h2>담당 역할</h2>
 <pre>
-🟪 사용자 페이지 - 로그인 및 회원 관리 (기여도 100%), 프론트엔드 (기여도 100%) <br> 
+🟪 사용자 페이지 - 로그인 및 회원 관리 (기여도 90%), 프론트엔드 (기여도 100%) <br> 
 🟪 결제 페이지 - 결제 기능 및 내용 조회 (기여도 100%), 프론트엔드 (기여도 100%) <br> 
-🟪 스프링 레거시 프로젝트 셋팅 - 패키기 구조 작성 및 템플릿 작성 (기여도 50%) <br> 
-🟪 프로젝트 DB 셋팅 - ERD 설계, 테이블 생성 (기여도 50%)
+🟪 스프링 레거시 프로젝트 셋팅 - 패키기 구조 작성 및 템플릿 작성 (기여도 80%) <br> 
+🟪 프로젝트 DB 셋팅 - ERD 설계, 테이블 생성 (기여도 80%)
 </pre>
 
 <h2>개발 환경</h2>
@@ -42,6 +42,7 @@ Web
 
 <h2> 🟪 ERD 설계 </h2>
 <img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/MBTING ERD.png"> 
+<p>ERDCLOUD: https://www.erdcloud.com/d/955EesMtzksbeHm5r</p>
 
 <h2> 🟪 구현 화면/코드 : 회원가입 기능</h3>
 <img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/enroll.gif"> 
