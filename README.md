@@ -44,7 +44,7 @@ Web
 <h3>ERD 설계 Point</h3>
 <pre>
 1. 각 테이블의 관계를 Primarykey를 외래키로 지정해서 쉽게 관계를 확인할 수 있도록 구현. <br>
-2. 테이블과 VO클래스의 필드값을 일치시켜 코딩 시 클라이언트 요청정보를 DB로 받는 코딩을 쉽게 작성할 수 설계했습니다.</pre>
+2. 테이블과 VO클래스의 필드값을 일치시켜 코딩 시 클라이언트 요청정보를 DB로 받는 코딩을 쉽게 작성할 수 있게 설계했습니다.</pre>
 <img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/MBTING ERD.png"> 
 <p>ERDCLOUD: https://www.erdcloud.com/d/955EesMtzksbeHm5r</p>
 
