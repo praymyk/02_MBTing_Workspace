@@ -44,7 +44,8 @@ Web
 <h3>ERD 설계 Point</h3>
 <pre>
 1. 각 테이블의 관계를 Primarykey를 외래키로 지정해서 쉽게 관계를 확인할 수 있도록 구현. <br>
-2. 테이블과 VO클래스의 필드값을 일치시켜 코딩 시 클라이언트 요청정보를 DB로 받는 코딩을 쉽게 작성할 수 있게 설계했습니다.</pre>
+2. 테이블과 VO클래스의 필드값을 일치시켜 코딩 시 클라이언트 요청정보를 VO 클래스로 가공한 뒤 <br>
+&nbsp&nbsp&nbsp DB로 받는 코딩을 쉽게 작성할 수 있게 설계했습니다.</pre>
 <img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/MBTING ERD.png"> 
 <p>ERDCLOUD: https://www.erdcloud.com/d/955EesMtzksbeHm5r</p>
 
@@ -53,7 +54,8 @@ Web
 <pre>
 1. 사용자 입력정보가 DB에 필요한 형식으로 제어되도록 JavaScript 내 정규식을 작성.<br>
 2. 보안을 위해 사용자 암호는 회원가입시 bcryt인코더를 이용해 암호화되어 DB에 저장되도록 설계.<br>
-3. 이메일 중복검사가 입력마다 진행되도록 keyup이벤트 내 AJAX를 작성했고 SELECT문을 이용해 중복 이메일 검사를 진행합니다.<br>
+3. 이메일 중복검사가 키 입력마다 진행되도록 keyup이벤트 내 AJAX를 작성했습니다.<br>
+&nbsp&nbsp&nbsp SELECT문을 이용해 중복된 이메일이 존재하는지 검사를 진행합니다.<br>
 4. 각 입력값의 유효함 여부를 JavaScript배열 변수에 담고 유효성 검사가 진행될 때 마다 finalCheck() 함수를 통해 <br>
    모든 항목에 대한 입력 값이 유효하다면 submit 버튼을 클릭 가능하도록 제어했습니다.</pre>
 <img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/enroll.gif"> 
@@ -69,7 +71,7 @@ Web
 <pre>
 1. sessionScope에 저장된 사용자 계정정보를 재활용해 마이페이지에 필요한 정보를 출력합니다.<br>
 2. 프로필 이미지는 MultipartFile를 통해 서버 내 resources 경로에 저장되도록 구현했고 DB에는 경로와 변환된 파일이름이 기록됩니다. <br>
-&nbsp&nbsp&nbsp프로젝트 외부는 이미지 파일 접근이 제한되 프로젝트 내에 프로필 이미지를 업로드 했습니다. <br>
+&nbsp&nbsp&nbsp프로젝트 외부는 이미지 파일의 접근이 제한되어 프로젝트 내에 프로필 이미지를 업로드 했습니다. <br>
 3. 나에게 매칭을 신청한 사용자 정보를 조회하기위해 MEMBER 테이블 WHERE절 USER_NO컬럼값을 서브쿼리를 이용해 제한했습니다.</pre>
 <img src="https://github.com/praymyk/02_MBTing_Workspace/blob/main/mypage.gif">
 <br/>
