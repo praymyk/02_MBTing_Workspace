@@ -315,17 +315,18 @@
 					
 					$.ajax({
 						url:'payTry.me',
+						type:"post",
 						data:{'tid' : tid,
 							  'partnerUserId': '${sessionScope.loginMember.email}'
 							  },
-						success:function(result2){
-							console.log("tid 받기 성공")
+						success:function(result){
+							console.log(result.message);
 						},
-						error: function(result2){
-							console.log("tid 받기 실패")
+						error: function(result){
+							console.log(result.message);
 							
 						}
-					})
+					});
 						
 				},
 				error:function(result){
@@ -357,14 +358,15 @@
 					
 					$.ajax({
 						url:'payTry.me',
+						type: "post",
 						data:{'tid' : tid,
 							  'partnerUserId': '${sessionScope.loginMember.email}'
 							  },
-						success:function(result2){
-							console.log("tid 받기 성공")
+						success:function(result){
+							console.log(result.message);
 						},
-						error: function(result2){
-							console.log("tid 받기 실패")
+						error: function(result){
+							console.log(result.message);
 							
 						}
 					})
